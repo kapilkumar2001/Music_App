@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Music Player',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -32,6 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Song> _songs;
   MusicFinder audioPlayer;
+  bool playing=false;
+  String last;
 
   @override
   void initState(){
@@ -42,15 +45,29 @@ class _MyHomePageState extends State<MyHomePage> {
   void initPlayer() async{
     audioPlayer = new MusicFinder();
     var songs = await MusicFinder.allSongs();
-    //songs = new List.from(songs);
     setState(() {
       _songs = songs;
     });
+    last = _songs[0].uri;
   }
 
   Future _playLocal(String url) async{
+    last = url;
     final result = await audioPlayer.play(url,isLocal: true);
+    playing = true;
+    setState(() {});
   }
+  Future pause() async {
+    final result = await audioPlayer.pause();
+    playing=false;
+    setState(() {});
+  }
+  Future stop() async {
+    final result = await audioPlayer.stop();
+    playing=false;
+    setState(() {});
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,18 +77,35 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: new ListView.builder(
           itemCount : _songs.length,
-          itemBuilder:(context,int index)
+          itemBuilder:(context, index)
           {
             return new ListTile(
               leading: new CircleAvatar(
                 child: new Text(_songs[index].title[0]),
               ),
               title: new Text(_songs[index].title),
-              onTap: ()=> _playLocal(_songs[index].uri),
+              onTap: ()=> playing? {stop(), _playLocal(_songs[index].uri), playing= true} : {_playLocal(_songs[index].uri), playing=true},
             );
           },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed:()=> playing? {pause(), Icon(Icons.play_arrow)}: {_playLocal(last),Icon(Icons.pause)},
+        splashColor: Colors.redAccent,
+        backgroundColor: Colors.blue,
+        child: (playing)?Icon(Icons.pause):Icon(Icons.play_arrow),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                 'Made with ❤️ by Kapil'.text.color(Colors.purple).make(),
+              ]
+        ),
       ),
     );
   }
 }
+
 
