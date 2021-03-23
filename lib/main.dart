@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: new Text(_songs[index].title[0]),
               ),
               title: new Text(_songs[index].title),
-              onTap: ()=> playing? {stop(), _playLocal(_songs[index].uri), playing= true} : {_playLocal(_songs[index].uri), playing=true},
+              onTap: ()=> {stop(), _playLocal(_songs[index].uri), playing= true},
             );
           },
       ),
