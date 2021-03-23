@@ -35,6 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   MusicFinder audioPlayer;
   bool playing=false;
   String last;
+  bool isLoading= true;
 
   @override
   void initState(){
@@ -49,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _songs = songs;
     });
     last = _songs[0].uri;
+    isLoading = false;
   }
 
   Future _playLocal(String url) async{
@@ -75,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: 'Music'.text.make(),
       ),
-      body: new ListView.builder(
+      body: isLoading? Center(child : CircularProgressIndicator()):new ListView.builder(
           itemCount : _songs.length,
           itemBuilder:(context, index)
           {
